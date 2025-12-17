@@ -65,8 +65,8 @@ class GpsLocationView extends GetView<GpsLocationController> {
       final circles = showAccuracyCircle
           ? [
               CircleMarker(
-                point: userLatLng!,
-                radius: accuracyMeters!.clamp(8, 2000).toDouble(),
+                point: userLatLng,
+                radius: accuracyMeters.clamp(8, 2000).toDouble(),
                 useRadiusInMeter: true,
                 color: theme.colorScheme.primary.withOpacity(0.12),
                 borderColor: theme.colorScheme.primary.withOpacity(0.48),
@@ -213,7 +213,7 @@ class GpsLocationView extends GetView<GpsLocationController> {
                             Positioned(
                               top: 12,
                               left: 12,
-                              child: _accuracyBadge(context, accuracyMeters!),
+                              child: _accuracyBadge(context, accuracyMeters),
                             ),
                           if (destination == null)
                             Positioned(

@@ -1,19 +1,14 @@
 import 'package:intl/intl.dart';
-import 'package:latlong2/latlong.dart';
 
-import '../../../../services/location_service.dart';
 import 'base_location_controller.dart';
 
 /// Controller dedicated to GPS (high accuracy) positioning.
 class GpsLocationController extends BaseLocationController {
   GpsLocationController({
-    required LocationService locationService,
-    LatLng? destination,
-    required String destinationLabel,
+    required super.locationService,
+    super.destination,
+    required super.destinationLabel,
   }) : super(
-          locationService: locationService,
-          destination: destination,
-          destinationLabel: destinationLabel,
           initialZoom: destination != null ? 16.0 : 13.0,
         );
 

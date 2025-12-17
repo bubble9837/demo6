@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -10,6 +11,7 @@ import '../../../routes/app_routes.dart';
 import '../../../services/session_service.dart';
 import '../../../services/supabase_services.dart';
 import '../../../services/todo_service.dart';
+import '../../../data/services/notification_handler.dart';
 import '../../../widgets/affirmations_widget.dart';
 import '../../../widgets/theme_toggle_action.dart';
 import '../controllers/user_controller.dart';
@@ -43,6 +45,7 @@ class _UserHomePageState extends State<UserHomePage>
   late AnimationController _entranceController;
   late ScrollController _moodScrollController;
   late final UserProvider _provider;
+  final NotificationHandler _notificationHandler = NotificationHandler();
 
   final List<Map<String, dynamic>> moods = [
     {
@@ -386,7 +389,7 @@ class _UserHomePageState extends State<UserHomePage>
                     decoration: InputDecoration(
                       hintText: 'Tambah to-do baru',
                       filled: true,
-                      fillColor: theme.colorScheme.surfaceVariant,
+                      fillColor: theme.colorScheme.surfaceContainerHighest,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -642,6 +645,12 @@ class _UserHomePageState extends State<UserHomePage>
                 ],
               ),
               const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: _scheduleMoodReminder,
+                icon: const Icon(Icons.alarm_add_outlined),
+                label: const Text('Atur Pengingat Mood Harian'),
+              ),
+              const SizedBox(height: 12),
               TextField(
                 controller: _journalCtrl,
                 maxLines: isWide ? 3 : 4,
@@ -877,6 +886,37 @@ class _UserHomePageState extends State<UserHomePage>
       duration: const Duration(milliseconds: 240),
       curve: Curves.easeOut,
     );
+  }
+
+  Future<void> _scheduleMoodReminder() async {
+    final now = DateTime.now();
+    // Jadwalkan pukul 20:00 setiap hari; jika sudah lewat, jadwalkan besok.
+    DateTime target = DateTime(now.year, now.month, now.day, 20, 0);
+    if (target.isBefore(now)) {
+      target = target.add(const Duration(days: 1));
+    }
+    try {
+      await _notificationHandler.scheduleReminder(
+        id: 9001,
+        title: 'Isi mood & jurnal harian',
+        body: 'Luangkan 1 menit untuk catat mood dan jurnal hari ini.',
+        scheduledTime: target,
+        payload: jsonEncode({'route': AppRoutes.home}),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Pengingat disetel pukul ${target.hour.toString().padLeft(2, '0')}:${target.minute.toString().padLeft(2, '0')} setiap hari.',
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal menyetel pengingat: $e')),
+      );
+    }
   }
 
   Future<void> _saveEntry() async {

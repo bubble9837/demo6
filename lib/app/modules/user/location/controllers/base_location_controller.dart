@@ -216,9 +216,10 @@ abstract class BaseLocationController extends GetxController {
   void centerOnLatestPosition() {
     if (!_mapReady) return;
     LatLng? target = currentLatLng;
-    target ??= lastKnownPosition.value != null
-        ? _toLatLng(lastKnownPosition.value!)
-        : null;
+    final lastKnown = lastKnownPosition.value;
+    if (target == null && lastKnown != null) {
+      target = _toLatLng(lastKnown);
+    }
     target ??= activeDestination ?? _defaultCenter;
 
     final camera = mapController.camera;

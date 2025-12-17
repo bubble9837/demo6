@@ -1,5 +1,7 @@
+import 'app/data/services/notification_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
@@ -9,6 +11,7 @@ import 'app/core/theme/theme_controller.dart';
 import 'app/data/models.dart';
 import 'app/services/session_service.dart';
 import 'app/services/todo_service.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +33,14 @@ Future<void> main() async {
   final prefs = await SharedPreferences.getInstance();
   themeController = ThemeController(prefs);
   await SessionService.init();
+
+  // Initialize Firebase (required for FCM) and then set up notifications.
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  final notificationHandler = NotificationHandler();
+  await notificationHandler.initLocalNotification();
+  await notificationHandler.initPushNotification();
 
   await supa.Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
   final User? lastUser = await SessionService.loadUser();

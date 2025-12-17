@@ -65,8 +65,8 @@ class NetworkLocationView extends GetView<NetworkLocationController> {
       final circles = showAccuracyCircle
           ? [
               CircleMarker(
-                point: userLatLng!,
-                radius: accuracyMeters!.clamp(8, 2000).toDouble(),
+                point: userLatLng,
+                radius: accuracyMeters.clamp(8, 2000).toDouble(),
                 useRadiusInMeter: true,
                 color: theme.colorScheme.secondary.withOpacity(0.12),
                 borderColor: theme.colorScheme.secondary.withOpacity(0.48),
@@ -214,7 +214,7 @@ class NetworkLocationView extends GetView<NetworkLocationController> {
                               left: 12,
                               child: _accuracyBadge(
                                 context,
-                                accuracyMeters!,
+                                accuracyMeters,
                                 theme.colorScheme.secondary,
                               ),
                             ),

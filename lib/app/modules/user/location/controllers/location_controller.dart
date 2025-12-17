@@ -1,20 +1,15 @@
 import 'package:get/get.dart';
-import 'package:latlong2/latlong.dart';
 
-import '../../../../services/location_service.dart';
 import 'base_location_controller.dart';
 
 /// Live tracking controller with provider toggle (GPS / Network).
 class LocationController extends BaseLocationController {
   LocationController({
-    required LocationService locationService,
-    LatLng? destination,
-    required String destinationLabel,
+    required super.locationService,
+    super.destination,
+    required super.destinationLabel,
   })  : useGpsToggle = true.obs,
         super(
-          locationService: locationService,
-          destination: destination,
-          destinationLabel: destinationLabel,
           initialZoom: destination != null ? 15.5 : 12.0,
         );
 

@@ -67,6 +67,7 @@ class _LoginPageState extends State<LoginPage>
       // Coba login dengan Supabase terlebih dahulu
       final online = await NetworkService.hasConnection();
       if (!online) {
+        if (!mounted) return;
         // Fallback ke akun lokal jika offline
         final localUser = InMemoryService.login(u, p);
         if (localUser == null) {
@@ -79,11 +80,13 @@ class _LoginPageState extends State<LoginPage>
           return;
         }
         await SessionService.saveUser(localUser);
+        if (!mounted) return;
         _navigateToHome(localUser);
         return;
       }
 
       // Online: wajib gunakan email (RLS mencegah lookup username sebelum login)
+      if (!mounted) return;
       if (!u.contains('@')) {
         messenger.showSnackBar(
           const SnackBar(
@@ -105,8 +108,10 @@ class _LoginPageState extends State<LoginPage>
       if (existing == null) {
         InMemoryService.register(remoteUser);
       }
-      
+
+      if (!mounted) return;
       await SessionService.saveUser(remoteUser);
+      if (!mounted) return;
       messenger.showSnackBar(
         const SnackBar(
           content: Text('Login berhasil!'),
@@ -171,7 +176,7 @@ class _LoginPageState extends State<LoginPage>
                   right: 12,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withValues(alpha: 0.5),
                       shape: BoxShape.circle,
                     ),
                     child: const ThemeToggleAction(iconColor: Colors.grey),
@@ -227,7 +232,7 @@ class _LoginPageState extends State<LoginPage>
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF7C3AED).withOpacity(0.3),
+            color: const Color(0xFF7C3AED).withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -249,7 +254,7 @@ class _LoginPageState extends State<LoginPage>
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 30,
             offset: const Offset(0, 10),
           ),
@@ -587,6 +592,7 @@ class _RegisterPageState extends State<RegisterPage>
       // Cek koneksi internet
       final online = await NetworkService.hasConnection();
       if (!online) {
+        if (!mounted) return;
         messenger.showSnackBar(
           const SnackBar(
             content: Text('Tidak ada koneksi internet. Register memerlukan koneksi.'),
@@ -605,6 +611,7 @@ class _RegisterPageState extends State<RegisterPage>
       
       if (!mounted) return;
       await SessionService.saveUser(registeredUser);
+      if (!mounted) return;
       
       messenger.showSnackBar(
         const SnackBar(
@@ -910,7 +917,7 @@ class _RoleCard extends StatelessWidget {
           boxShadow: [
             if (selected)
               BoxShadow(
-                color: Colors.indigo.withOpacity(0.12),
+                color: Colors.indigo.withValues(alpha: 0.12),
                 blurRadius: 10,
                 offset: const Offset(0, 6),
               ),
@@ -921,7 +928,7 @@ class _RoleCard extends StatelessWidget {
           children: [
             CircleAvatar(
               backgroundColor: selected
-                  ? Colors.indigo.withOpacity(0.12)
+                  ? Colors.indigo.withValues(alpha: 0.12)
                   : Colors.grey.shade100,
               child: Icon(
                 icon,

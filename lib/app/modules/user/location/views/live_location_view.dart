@@ -64,8 +64,8 @@ class LiveLocationView extends GetView<LocationController> {
       final circles = showAccuracyCircle
           ? [
               CircleMarker(
-                point: userLatLng!,
-                radius: accuracyMeters!.clamp(8, 2000).toDouble(),
+                point: userLatLng,
+                radius: accuracyMeters.clamp(8, 2000).toDouble(),
                 useRadiusInMeter: true,
                 color: theme.colorScheme.primary.withOpacity(0.12),
                 borderColor: theme.colorScheme.primary.withOpacity(0.48),
@@ -230,7 +230,7 @@ class LiveLocationView extends GetView<LocationController> {
                               left: 12,
                               child: _accuracyBadge(
                                 context,
-                                accuracyMeters!,
+                                accuracyMeters,
                                 providerColor,
                               ),
                             ),
